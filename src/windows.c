@@ -108,7 +108,11 @@ CRAPI CRINT64 CRWindowCounter(void)
 
 CRAPI void CRCreateWindow(PCRWindowProperties prop)
 {
-    if (!prop) CR_LOG_ERR("auto", "nullptr");
+    if (!prop)
+    {
+        CR_LOG_ERR("auto", "nullptr");
+        return;
+    }
     prop->window = (CRWINDOW)NULL;
     PCRWINDOWINNER pInner = CRAlloc(NULL, sizeof(CRWINDOWINNER));
     if (!pInner)
