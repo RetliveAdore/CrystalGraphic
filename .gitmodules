@@ -1,0 +1,9 @@
+[submodule "CrystalAlgorithms"]
+	path = CrystalAlgorithms
+	url = https://github.com/RetliveAdore/CrystalAlgorithms
+[submodule "CrystalCore"]
+	path = CrystalCore
+	url = https://github.com/RetliveAdore/CrystalCore
+[submodule "CrystalThread"]
+	path = CrystalThread
+	url = https://github.com/RetliveAdore/CrystalThread
