@@ -2,8 +2,8 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-22 21:47:27
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-06-26 14:31:10
- * @FilePath: \Crystal-Graphic\include\GraphicDfs.h
+ * @LastEditTime: 2024-06-27 13:17:20
+ * @FilePath: \CrystalGraphic\include\GraphicDfs.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
  */
@@ -14,6 +14,7 @@
 #include <CrystalAlgorithms.h>
 
 #define CR_WNDCLASS_NAME "CrystalWindow"
+#define CRUI_TITLEBAR_PIXEL 25
 
 typedef struct crwindow_properties
 {
