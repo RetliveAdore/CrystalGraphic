@@ -49,6 +49,9 @@ extern CRBOOL _inner_x_init_();
 extern void _inner_x_uninit_();
 #endif
 
+extern void _inner_init_gl_();
+extern void _inner_uninit_gl_();
+
 CRAPI CRBOOL CRModInit(void **ptr)
 {
     if (ptr[0] == ptr[1])
@@ -59,6 +62,7 @@ CRAPI CRBOOL CRModInit(void **ptr)
     #elif defined CR_LINUX
     return _inner_x_init_();
     #endif
+    _inner_init_gl_();
 }
 
 CRAPI void CRModUninit(void)
@@ -67,6 +71,7 @@ CRAPI void CRModUninit(void)
     _inner_uninit_wndclass_();
     #elif defined CR_LINUX
     _inner_x_uninit_();
+    _inner_uninit_gl_();
     #endif
     if (lock) CRLockRelease(lock);
 }

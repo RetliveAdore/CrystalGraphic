@@ -203,6 +203,7 @@ CRAPI void CRCreateWindow(PCRWindowProperties prop)
         pInner->funcs[i] = _inner_empty_callback_;
     pInner->onProcess = CRTRUE;
     pInner->drag = CRFALSE;
+    pInner->preClose = CRFALSE;
     pInner->prop = prop;
     pInner->eventThread = CRThread(_inner_window_thread_, pInner);
     //

@@ -4,6 +4,7 @@ INCLUDE_PATHS += ./CrystalAlgorithms/include
 INCLUDE_PATHS += ./CrystalThread/include
 
 LIBRARIES := X11
+LIBRARIES += GL
 
 INCLUDE_PATHS := $(foreach item,$(INCLUDE_PATHS),-I$(item))
 LIBRARIES := $(foreach item,$(LIBRARIES),-l$(item))
