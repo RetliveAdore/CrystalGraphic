@@ -2,12 +2,13 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-23 00:38:41
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-06-27 21:37:46
+ * @LastEditTime: 2024-07-08 21:27:11
  * @FilePath: \CrystalGraphic\src\windows.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
  */
 #include <GraphicDfs.h>
+#include "crgl.h"
 
 #ifdef CR_WINDOWS
 #include <windows.h>
@@ -148,13 +149,15 @@ LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     }
     return AfterProc(hWnd, msg, wParam, lParam, pInner);
 }
-
+//
+static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis);
+//
 static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
 {
     PCRWINDOWINNER pInner = data;
     pInner->hWnd = CreateWindow(
         CR_WNDCLASS_NAME,
-        pInner->prop->title, WS_OVERLAPPEDWINDOW,
+        pInner->prop->title, WS_POPUP,
         pInner->prop->x, pInner->prop->y,
         pInner->prop->w, pInner->prop->h,
         NULL, NULL, GetModuleHandle(NULL), pInner
@@ -164,6 +167,9 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
     //
     CR_LOG_IFO("auto", "Create Window");
     MSG msg = {0};
+    //
+    pInner->paintThread = CRThread(_inner_paint_thread_, pInner);
+    //
     while (pInner->onProcess)
     {
         if (GetMessage(&msg, NULL, 0, 0))
@@ -178,6 +184,15 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
     CRLock(lock);
     windowCounter--;
     CRUnlock(lock);
+}
+
+static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis)
+{
+    PCRWINDOWINNER pInner = (PCRWINDOWINNER)data;
+    CR_GL* pgl = _inner_create_cr_gl_(GetDC(pInner->hWnd));
+    CR_LOG_IFO("auto", "OpenGL Version: %s", pgl->glGetString(GL_VERSION));
+    //释放
+    _inner_delete_cr_gl_(pgl);
 }
 
 CRAPI CRINT64 CRWindowCounter(void)

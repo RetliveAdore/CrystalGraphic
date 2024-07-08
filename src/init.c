@@ -2,8 +2,8 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-23 00:42:19
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-06-26 13:39:49
- * @FilePath: \Crystal-Graphic\src\init.c
+ * @LastEditTime: 2024-07-08 21:19:51
+ * @FilePath: \CrystalGraphic\src\init.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
  */
@@ -57,12 +57,14 @@ CRAPI CRBOOL CRModInit(void **ptr)
     if (ptr[0] == ptr[1])
         return CRFALSE;
     CRCoreFunList = ptr;
+    CRBOOL back;
     #ifdef CR_WINDOWS
-    return _inner_init_wndclass_();
+    back = _inner_init_wndclass_();
     #elif defined CR_LINUX
-    return _inner_x_init_();
+    back = _inner_x_init_();
     #endif
     _inner_init_gl_();
+    return back;
 }
 
 CRAPI void CRModUninit(void)
@@ -71,8 +73,8 @@ CRAPI void CRModUninit(void)
     _inner_uninit_wndclass_();
     #elif defined CR_LINUX
     _inner_x_uninit_();
-    _inner_uninit_gl_();
     #endif
+    _inner_uninit_gl_();
     if (lock) CRLockRelease(lock);
 }
 

@@ -4,6 +4,8 @@ INCLUDE_PATHS += .\CrystalAlgorithms\include
 INCLUDE_PATHS += .\CrystalThread\include
 
 LIBRARIES := winmm
+LIBRARIES += opengl32
+LIBRARIES += gdi32
 
 INCLUDE_PATHS := $(foreach item,$(INCLUDE_PATHS),-I$(item))
 LIBRARIES := $(foreach item,$(LIBRARIES),-l$(item))

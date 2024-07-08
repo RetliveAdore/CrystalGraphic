@@ -17,8 +17,8 @@
 typedef struct cr_gl
 {
     #ifdef CR_WINDOWS
-    HDC _hDc;
-    HGLRC _hRc;
+    HDC hdc;
+    HGLRC hrc;
     #elif defined CR_LINUX
     Display* dpy;
     Window wd;
@@ -77,7 +77,7 @@ typedef struct cr_gl
 }CR_GL;
 
 #ifdef CR_WINDOWS
-CR_GL* _inner_create_cr_gl_();
+CR_GL* _inner_create_cr_gl_(HDC hDc);
 #elif defined CR_LINUX
 CR_GL* _inner_create_cr_gl_(Display* pDisplay, XVisualInfo* vi, Window win);
 #endif
