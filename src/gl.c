@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-10 20:26:48
+ * @LastEditTime: 2024-07-10 23:32:33
  * @FilePath: \CrystalGraphic\src\gl.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -166,6 +166,11 @@ CR_GL* _inner_create_cr_gl_(
         CR_LOG_ERR("auto", "bad alloc");
         return NULL;
     }
+    pgl->aspx = 1.0f;
+    pgl->aspy = 1.0f;
+    pgl->dx = 0.0f;
+    pgl->dy = 0.0f;
+    pgl->ratio = 0.0f;
     //创建上下文
     #ifdef CR_WINDOWS
     pgl->hdc = hDc;
@@ -201,13 +206,77 @@ void _inner_delete_cr_gl_(CR_GL* pgl)
     CRAlloc(pgl, 0);
 }
 
+static void _inner_fill_port_(CR_GL* pgl, float r, float g, float b)
+{
+    pgl->glColor3f(r, g, b);
+    pgl->glBegin(GL_QUADS);
+    pgl->glVertex3f(1.0f, 1.0f, 0);
+    pgl->glVertex3f(1.0f, -1.0f, 0);
+    pgl->glVertex3f(-1.0f, -1.0f, 0);
+    pgl->glVertex3f(-1.0f, 1.0f, 0);
+    pgl->glEnd();
+}
+
+static void _inner_draw_titlebar_(CR_GL* pgl)
+{
+    pgl->glLoadIdentity();
+    pgl->glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f);
+    //标题栏底色
+    pgl->glViewport(0, pgl->h, pgl->w, CRUI_TITLEBAR_PIXEL);
+    _inner_fill_port_(pgl, 0.2, 0.3, 0.35);
+    //三个按钮
+    pgl->glViewport(CRUI_TITLEBAR_PIXEL / 4, pgl->h + CRUI_TITLEBAR_PIXEL / 4, CRUI_TITLEBAR_PIXEL / 2, CRUI_TITLEBAR_PIXEL / 2);
+    _inner_fill_port_(pgl, 0.95, 0.45, 0.55);
+    //
+    pgl->glViewport(CRUI_TITLEBAR_PIXEL + CRUI_TITLEBAR_PIXEL / 4, pgl->h + CRUI_TITLEBAR_PIXEL / 4, CRUI_TITLEBAR_PIXEL / 2, CRUI_TITLEBAR_PIXEL / 2);
+    _inner_fill_port_(pgl, 0.55, 0.9, 0.55);
+    //
+    pgl->glViewport(CRUI_TITLEBAR_PIXEL * 2 + CRUI_TITLEBAR_PIXEL / 4, pgl->h + CRUI_TITLEBAR_PIXEL / 4, CRUI_TITLEBAR_PIXEL / 2, CRUI_TITLEBAR_PIXEL / 2);
+    _inner_fill_port_(pgl, 0.7, 0.6, 1.0);
+    //
+}
+
+static void _inner_ratio_(CR_GL* pgl)
+{
+    pgl->ratio = CRGL_RATIO / (float)(pgl->w < pgl->h ? pgl->w : pgl->h) * 2;
+    if (pgl->w > pgl->h)
+    {
+        pgl->dx = pgl->w * pgl->ratio / 2;
+        pgl->dy = CRGL_RATIO;
+        pgl->aspx = (float)pgl->h / (float)pgl->w;
+        pgl->aspy = 1.0;
+    }
+    else
+    {
+        pgl->dx = CRGL_RATIO;
+        pgl->dy = pgl->h * pgl->ratio / 2;
+        pgl->aspx = 1.0f;
+        pgl->aspy = (float)pgl->w / (float)pgl->h;
+    }
+}
+
+void _inner_cr_gl_resize_(CR_GL* pgl)
+{
+    pgl->glViewport(0, 0, pgl->w, pgl->h);
+    pgl->glLoadIdentity();
+    _inner_ratio_(pgl);
+}
+
 void _inner_cr_gl_paint_(CR_GL* pgl)
 {
     pgl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    _inner_draw_titlebar_(pgl);
+    _inner_cr_gl_resize_(pgl);
     //更新缓冲
     #ifdef CR_WINDOWS
     SwapBuffers(pgl->hdc);
     #elif defined CR_LINUX
     glXSwapBuffers(pgl->dpy, pgl->wd);
     #endif
+}
+
+void _inner_set_size_(CR_GL* pgl, CRUINT64 w, CRUINT64 h)
+{
+    pgl->w = w;
+    pgl->h = h;
 }

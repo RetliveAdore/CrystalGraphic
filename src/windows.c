@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-23 00:38:41
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-10 20:56:12
+ * @LastEditTime: 2024-07-10 23:43:45
  * @FilePath: \CrystalGraphic\src\windows.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -116,6 +116,12 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
             if (pInner->funcs[CRWINDOW_KEY_CB](&inf))
                 return 0;
             break;
+        case WM_SIZE:
+            _inner_set_size_(pInner->pgl, inf.w, inf.h);
+            _inner_cr_gl_resize_(pInner->pgl);
+            if (pInner->funcs[CRWINDOW_SIZE_CB](&inf))
+                return 0;
+            break;
         default:
             break;
     }
@@ -132,6 +138,7 @@ LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(lpcs->lpCreateParams));
         pInner = lpcs->lpCreateParams;
         pInner->pgl = _inner_create_cr_gl_(GetDC(hWnd));
+        CR_LOG_IFO("auto", "OpenGL Version: %s", pInner->pgl->glGetString(GL_VERSION));
         return 0;
     }
     pInner = (PCRWINDOWINNER)(CRUINT64)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -193,7 +200,6 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
 static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis)
 {
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)data;
-    CR_LOG_IFO("auto", "OpenGL Version: %s", pInner->pgl->glGetString(GL_VERSION));
     while (pInner->onProcess)
     {
         SendMessage(pInner->hWnd, WM_PAINT, 0, 0);
@@ -226,6 +232,7 @@ CRAPI void CRCreateWindow(PCRWindowProperties prop)
     pInner->drag = CRFALSE;
     pInner->preClose = CRFALSE;
     pInner->prop = prop;
+    pInner->pgl = NULL;
     pInner->eventThread = CRThread(_inner_window_thread_, pInner);
     //
     //多线程操作需要加锁

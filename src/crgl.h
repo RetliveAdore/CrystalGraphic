@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-10 19:24:29
+ * @LastEditTime: 2024-07-10 23:37:14
  * @FilePath: \CrystalGraphic\src\crgl.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -33,6 +33,10 @@ typedef struct cr_gl
     Window wd;
     GLXContext context;
     #endif
+    CRUINT64 w, h;
+    float ratio;
+    float aspx, aspy;
+    float dx, dy;
     //
     const GLubyte* (*glGetString)(GLenum name);
     void (*glClearColor)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
@@ -90,9 +94,10 @@ CR_GL* _inner_create_cr_gl_(HDC hDc);
 #elif defined CR_LINUX
 CR_GL* _inner_create_cr_gl_(Display* pDisplay, XVisualInfo* vi, Window win);
 #endif
-
 void _inner_delete_cr_gl_(CR_GL* pgl);
 
+void _inner_cr_gl_resize_(CR_GL* pgl);
 void _inner_cr_gl_paint_(CR_GL* pgl);
+void _inner_set_size_(CR_GL* pgl, CRUINT64 w, CRUINT64 h);
 
 #endif
