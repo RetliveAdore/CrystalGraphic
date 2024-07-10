@@ -150,7 +150,15 @@ static void _inner_setup_pixel_format_(HDC hDc)
 }
 #endif
 
-CR_GL* _inner_create_cr_gl_(HDC hDc)
+CR_GL* _inner_create_cr_gl_(
+    #ifdef CR_WINDOWS
+    HDC hDc
+    #elif defined CR_LINUX
+    Display* pDisplay,
+    XVisualInfo* vi,
+    Window win
+    #endif
+)
 {
     CR_GL* pgl = CRAlloc(NULL, sizeof(CR_GL));
     if (!pgl)
@@ -200,6 +208,6 @@ void _inner_cr_gl_paint_(CR_GL* pgl)
     #ifdef CR_WINDOWS
     SwapBuffers(pgl->hdc);
     #elif defined CR_LINUX
-    glXSwapBuffers(pgl->dpy, pgl->w);
+    glXSwapBuffers(pgl->dpy, pgl->wd);
     #endif
 }

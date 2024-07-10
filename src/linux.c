@@ -275,6 +275,12 @@ static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis)
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)data;
     CR_GL* pgl= _inner_create_cr_gl_(pDisplay, pInner->vi, pInner->win);
     CR_LOG_IFO("auto", "Version: %s", pgl->glGetString(GL_VERSION));
+    while (pInner->onProcess)
+    {
+        _inner_cr_gl_paint_(pgl);
+        XFlush(pDisplay);
+        CRSleep(1);
+    }
     //释放
     _inner_delete_cr_gl_(pgl);
 }
