@@ -1,4 +1,13 @@
-﻿#ifndef _INCLUDE_CRGL_H_
+﻿/*
+ * @Author: RetliveAdore lizaterop@gmail.com
+ * @Date: 2024-07-08 12:33:11
+ * @LastEditors: RetliveAdore lizaterop@gmail.com
+ * @LastEditTime: 2024-07-10 19:24:29
+ * @FilePath: \CrystalGraphic\src\crgl.h
+ * @Description: 
+ * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
+ */
+#ifndef _INCLUDE_CRGL_H_
 #define _INCLUDE_CRGL_H_
 
 #include <GraphicDfs.h>
@@ -83,5 +92,7 @@ CR_GL* _inner_create_cr_gl_(Display* pDisplay, XVisualInfo* vi, Window win);
 #endif
 
 void _inner_delete_cr_gl_(CR_GL* pgl);
+
+void _inner_cr_gl_paint_(CR_GL* pgl);
 
 #endif

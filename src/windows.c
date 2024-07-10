@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-23 00:38:41
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-08 21:27:11
+ * @LastEditTime: 2024-07-10 20:56:12
  * @FilePath: \CrystalGraphic\src\windows.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -24,6 +24,7 @@ typedef struct crwindow_inner
     CRUINT32 fps;
     PCRWindowProperties prop;
     CRPOINTU cursor;
+    CR_GL* pgl;
     //
     CRWindowCallback funcs[CALLBACK_FUNCS_NUM];
     CRBOOL onProcess;
@@ -50,6 +51,7 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
     switch (msg)
     {
         case WM_PAINT:
+            _inner_cr_gl_paint_(pInner->pgl);
             break;
         case WM_MOUSEMOVE:
             if (inf.y > 0)
@@ -129,6 +131,7 @@ LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(lpcs->lpCreateParams));
         pInner = lpcs->lpCreateParams;
+        pInner->pgl = _inner_create_cr_gl_(GetDC(hWnd));
         return 0;
     }
     pInner = (PCRWINDOWINNER)(CRUINT64)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -145,6 +148,7 @@ LRESULT WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)NULL);
         pInner->onProcess = CRFALSE;
+        _inner_delete_cr_gl_(pInner->pgl);
         return DefWindowProc(hWnd, msg, wParam, lParam);
     }
     return AfterProc(hWnd, msg, wParam, lParam, pInner);
@@ -189,10 +193,12 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
 static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis)
 {
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)data;
-    CR_GL* pgl = _inner_create_cr_gl_(GetDC(pInner->hWnd));
-    CR_LOG_IFO("auto", "OpenGL Version: %s", pgl->glGetString(GL_VERSION));
-    //释放
-    _inner_delete_cr_gl_(pgl);
+    CR_LOG_IFO("auto", "OpenGL Version: %s", pInner->pgl->glGetString(GL_VERSION));
+    while (pInner->onProcess)
+    {
+        SendMessage(pInner->hWnd, WM_PAINT, 0, 0);
+        CRSleep(1);
+    }
 }
 
 CRAPI CRINT64 CRWindowCounter(void)
