@@ -33,10 +33,9 @@ typedef struct crwindow_inner
     CRUINT32 fps;
     PCRWindowProperties prop;
     CRPOINTU delta;
+    CR_GL* pgl;
     //
     XVisualInfo *vi;
-    //
-
     //
     CRWindowCallback funcs[CALLBACK_FUNCS_NUM];
     CRBOOL onProcess;
@@ -58,6 +57,7 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
 {
     CRWINDOWMSG inf;
     XEvent event;
+    while (!pInner->pgl) CRSleep(1);
     while (pInner->onProcess)
     {
         inf.window = pInner->win;
@@ -71,6 +71,13 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
         switch (event.type)
         {
         case Expose:
+            pInner->funcs[CRWINDOW_PAINT_CB](&inf);
+            break;
+        case ConfigureNotify:
+            inf.w = event.xconfigure.width;
+            inf.h = event.xconfigure.height - CRUI_TITLEBAR_PIXEL;
+            _inner_set_size_(pInner->pgl, inf.w, inf.h);
+            _inner_cr_gl_resize_(pInner->pgl);
             break;
         case MotionNotify:
             if (event.xbutton.x < CRUI_TITLEBAR_PIXEL && event.xbutton.y < CRUI_TITLEBAR_PIXEL)
@@ -164,8 +171,9 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
                 if (!pInner->funcs[CRWINDOW_QUIT_CB](&inf))
                 {
                     XSelectInput(pDisplay, pInner->win, NoEventMask);
-                    XDestroyWindow(pDisplay, pInner->win);
                     pInner->onProcess = CRFALSE;
+                    while(pInner->pgl) CRSleep(1);
+                    XDestroyWindow(pDisplay, pInner->win);
                 }
                 CR_LOG_IFO("auto", "Close window");
             }
@@ -273,16 +281,17 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
 static void _inner_paint_thread_(CRLVOID data, CRTHREAD idThis)
 {
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)data;
-    CR_GL* pgl= _inner_create_cr_gl_(pDisplay, pInner->vi, pInner->win);
-    CR_LOG_IFO("auto", "Version: %s", pgl->glGetString(GL_VERSION));
+    pInner->pgl= _inner_create_cr_gl_(pDisplay, pInner->vi, pInner->win);
+    CR_LOG_IFO("auto", "OpenGL Version: %s", pInner->pgl->glGetString(GL_VERSION));
     while (pInner->onProcess)
     {
-        _inner_cr_gl_paint_(pgl);
+        _inner_cr_gl_paint_(pInner->pgl);
         XFlush(pDisplay);
         CRSleep(1);
     }
     //释放
-    _inner_delete_cr_gl_(pgl);
+    _inner_delete_cr_gl_(pInner->pgl);
+    pInner->pgl = NULL;
 }
 
 CRAPI CRINT64 CRWindowCounter(void)
@@ -310,6 +319,7 @@ CRAPI void CRCreateWindow(PCRWindowProperties prop)
     pInner->drag = CRFALSE;
     pInner->preClose = CRFALSE;
     pInner->prop = prop;
+    pInner->pgl = NULL;
     pInner->eventThread = CRThread(_inner_window_thread_, pInner);
     //
     CRLock(lock);
