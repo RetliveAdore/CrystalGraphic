@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-23 00:42:19
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-08 21:19:51
+ * @LastEditTime: 2024-08-07 00:00:06
  * @FilePath: \CrystalGraphic\src\init.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -12,6 +12,7 @@
 
 void **CRCoreFunList = NULL;
 void **CRThreadFunList = NULL;
+void **CRAlgorithmsFunList= NULL;
 extern CRLOCK lock;
 
 #ifdef CR_WINDOWS
@@ -78,18 +79,19 @@ CRAPI void CRModUninit(void)
     if (lock) CRLockRelease(lock);
 }
 
-CRAPI CRBOOL CrystalGraphicInit(void** thr)
+CRAPI CRBOOL CrystalGraphicInit(void** alg, void** thr)
 {
-    if (!thr)
+    if (!alg || !thr)
     {
         CR_LOG_ERR("auto", "nullptr");
         return CRFALSE;
     }
-    if (thr[0] == thr[2])
+    if (alg[0] == alg[2] || thr[0] == thr[2])
     {
-        CR_LOG_ERR("auto", "CRThreadFunList not inited correctly");
+        CR_LOG_ERR("auto", "CRAlgorithmsFunList or CRThreadFunList not inited correctly");
         return CRFALSE;
     }
+    CRAlgorithmsFunList = alg;
     CRThreadFunList = thr;
     lock = CRLockCreate();
     return CRTRUE;

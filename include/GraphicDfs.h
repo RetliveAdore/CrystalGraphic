@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-22 21:47:27
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-06-27 13:17:20
+ * @LastEditTime: 2024-08-06 23:14:08
  * @FilePath: \CrystalGraphic\include\GraphicDfs.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -15,6 +15,14 @@
 
 #define CR_WNDCLASS_NAME "CrystalWindow"
 #define CRUI_TITLEBAR_PIXEL 25
+
+typedef struct crcoloru
+{
+    CRUINT8 r;
+    CRUINT8 g;
+    CRUINT8 b;
+    CRUINT8 a;
+}CRCOLORU;
 
 typedef struct crwindow_properties
 {

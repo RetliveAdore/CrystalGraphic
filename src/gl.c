@@ -2,12 +2,14 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-10 23:32:33
+ * @LastEditTime: 2024-08-07 00:03:45
  * @FilePath: \CrystalGraphic\src\gl.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
  */
 #include "crgl.h"
+#include <resources.h>
+#include <stdio.h>
 
 #define CRGL_RATIO 1.0f
 
@@ -27,7 +29,7 @@ void _inner_init_gl_()
     #endif
     if (!libgl) CR_LOG_ERR("auto", "Failed load OpenGL library");
 }
-
+  
 //供init.c中清理函数使用
 void _inner_uninit_gl_()
 {
@@ -185,17 +187,30 @@ CR_GL* _inner_create_cr_gl_(
     #endif
     //创建完成之后才会有版本信息
     _inner_load_glapi_(pgl);
+    //
+    pgl->pubPool = _inner_cr_glpubpool_create_(pgl);
     //进行一些初始化
     pgl->glDisable(GL_DEPTH_TEST);
     pgl->glDisable(GL_DEPTH);
     pgl->glEnable(GL_BLEND);
     pgl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     pgl->glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //
+    pgl->whiteColor.r = 255;
+    pgl->whiteColor.g = 255;
+    pgl->whiteColor.b = 255;
+    pgl->whiteColor.a = 255;
+    pgl->publicTexture = _inner_tex_(pgl->pubPool);
+    pgl->glBindTexture(GL_TEXTURE_2D, pgl->publicTexture);
+    pgl->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(pgl->whiteColor));
+    //
+    //
     return pgl;
 }
 
 void _inner_delete_cr_gl_(CR_GL* pgl)
 {
+    _inner_cr_glpubpool_release_(pgl->pubPool);
     #ifdef CR_WINDOWS
     wglMakeCurrent(pgl->hdc, NULL);
     wglDeleteContext(pgl->hrc);
@@ -279,4 +294,86 @@ void _inner_set_size_(CR_GL* pgl, CRUINT64 w, CRUINT64 h)
 {
     pgl->w = w;
     pgl->h = h;
+}
+
+//
+
+PCR_GL_PUBPOOL _inner_cr_glpubpool_create_(CR_GL* pgl)
+{
+    CR_GL *pInner = (CR_GL*)pgl;
+    PCR_GL_PUBPOOL pPool = CRAlloc(NULL, sizeof(CR_GL_PUBPOOL));
+    if (!pPool)
+    {
+        CR_LOG_ERR("auto", "bad alloc");
+        return NULL;
+    }
+    pPool->glGenVertexArrays = pInner->glGenVertexArrays;
+    pPool->glGenBuffers = pInner->glGenBuffers;
+    pPool->glGenTextures = pInner->glGenTextures;
+    pPool->glDeleteVertexArrays = pInner->glDeleteVertexArrays;
+    pPool->glDeleteBuffers = pInner->glDeleteBuffers;
+    pPool->glDeleteTextures = pInner->glDeleteTextures;
+    pPool->vaoPool = CRDynamic(0);
+    pPool->vboPool = CRDynamic(0);
+    pPool->texPool = CRDynamic(0);
+    //
+    return pPool;
+}
+
+static void _inner_vao_cbk_(CRLVOID data, CRLVOID pool, CRUINT64 key)
+{
+    PCR_GL_PUBPOOL pPool = (PCR_GL_PUBPOOL)pool;
+    pPool->glDeleteVertexArrays(sizeof(CRLVOID) / sizeof(GLuint), (const GLuint*)&data);
+}
+
+static void _inner_vbo_cbk_(CRLVOID data, CRLVOID pool, CRUINT64 key)
+{
+    PCR_GL_PUBPOOL pPool = (PCR_GL_PUBPOOL)pool;
+    pPool->glDeleteBuffers(sizeof(CRLVOID) / sizeof(GLuint), (const GLuint*)&data);
+}
+
+static void _inner_tex_cbk_(CRLVOID data, CRLVOID pool, CRUINT64 key)
+{
+    PCR_GL_PUBPOOL pPool = (PCR_GL_PUBPOOL)pool;
+    pPool->glDeleteTextures(sizeof(CRLVOID) / sizeof(GLuint), (const GLuint*)&data);
+}
+
+void _inner_cr_glpubpool_release_(PCR_GL_PUBPOOL pool)
+{
+    CRStructureForEach(pool->vaoPool, _inner_vao_cbk_, pool);
+    CRStructureForEach(pool->vboPool, _inner_vbo_cbk_, pool);
+    CRStructureForEach(pool->texPool, _inner_tex_cbk_, pool);
+    CRFreeStructure(pool->vaoPool, NULL);
+    CRFreeStructure(pool->vboPool, NULL);
+    CRFreeStructure(pool->texPool, NULL);
+}
+
+CRUINT32 _inner_vao_(PCR_GL_PUBPOOL pool)
+{
+    CRUINT32 vao = 0;
+    if (CRStructureSize(pool->vaoPool))
+        CRDynPop(pool->vaoPool, &vao, DYN_MODE_32);
+    else
+        pool->glGenVertexArrays(1, &vao);
+    return vao;
+}
+
+CRUINT32 _inner_vbo_(PCR_GL_PUBPOOL pool)
+{
+    CRUINT32 vbo = 0;
+    if (CRStructureSize(pool->vboPool))
+        CRDynPop(pool->vboPool, &vbo, DYN_MODE_32);
+    else
+        pool->glGenBuffers(1, &vbo);
+    return vbo;
+}
+
+CRUINT32 _inner_tex_(PCR_GL_PUBPOOL pool)
+{
+    CRUINT32 tex = 0;
+    if (CRStructureSize(pool->texPool))
+        CRDynPop(pool->texPool, &tex, DYN_MODE_32);
+    else
+        pool->glGenTextures(1, &tex);
+    return tex;
 }

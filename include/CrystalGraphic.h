@@ -2,8 +2,8 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-06-24 16:49:08
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-06-26 13:20:21
- * @FilePath: \Crystal-Graphic\include\CrystalGraphic.h
+ * @LastEditTime: 2024-08-06 23:34:38
+ * @FilePath: \CrystalGraphic\include\CrystalGraphic.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
  */
@@ -17,9 +17,8 @@ extern void** CRGraphicFunList;
 /**
  * CrystalGraphic有额外的依赖项，需要单独初始化
  */
-typedef CRBOOL(*CRYSTALGRAPHICINIT)(void** thr);
+typedef CRBOOL(*CRYSTALGRAPHICINIT)(void** alg, void** thr);
 #define CrystalGraphicInit ((CRYSTALGRAPHICINIT)CRGraphicFunList[0])
-
 
 /**
  * 用于获取当前活动窗口数量，用以确保所有活动结束后再退出

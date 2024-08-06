@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-07-10 23:37:14
+ * @LastEditTime: 2024-08-06 22:55:56
  * @FilePath: \CrystalGraphic\src\crgl.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -23,6 +23,23 @@
 #  define CR_GLAPI
 #endif
 
+/**
+ * 用于对象池管理，申请新的GPU对象很慢，所以说能复用就复用
+ */
+typedef struct cr_gl_public_pool
+{
+    CRSTRUCTURE vaoPool;
+    CRSTRUCTURE vboPool;
+    CRSTRUCTURE texPool;
+    //一些会用到的接口
+    void (*glGenVertexArrays)(GLsizei n, GLuint* arrays);
+    void (*glDeleteVertexArrays)(GLsizei n, const GLuint* arrays);
+    void (*glGenBuffers)(GLsizei n, GLuint* buffers);
+    void (*glDeleteBuffers)(GLsizei n, const GLuint* buffers);
+    void (*glGenTextures)(GLsizei n, GLuint* textures);
+    void (*glDeleteTextures)(GLsizei n, const GLuint* textures);
+}CR_GL_PUBPOOL, *PCR_GL_PUBPOOL;
+
 typedef struct cr_gl
 {
     #ifdef CR_WINDOWS
@@ -38,6 +55,16 @@ typedef struct cr_gl
     float aspx, aspy;
     float dx, dy;
     //
+    PCR_GL_PUBPOOL pubPool;
+    //
+    CRUINT32 VertexShader;
+    CRUINT32 FragmentShader;
+    CRUINT32 shaderProgram;
+    CRINT32 colorLocation;
+    CRINT32 aspLocation;
+    CRINT32 texture0;
+    CRUINT32 publicTexture;
+    CRCOLORU whiteColor;  //1x1纹理，主打一个节省空间
     const GLubyte* (*glGetString)(GLenum name);
     void (*glClearColor)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
     void (*glClear)(GLbitfield mask);
@@ -99,5 +126,12 @@ void _inner_delete_cr_gl_(CR_GL* pgl);
 void _inner_cr_gl_resize_(CR_GL* pgl);
 void _inner_cr_gl_paint_(CR_GL* pgl);
 void _inner_set_size_(CR_GL* pgl, CRUINT64 w, CRUINT64 h);
+
+//
+PCR_GL_PUBPOOL _inner_cr_glpubpool_create_(CR_GL* pgl);
+void _inner_cr_glpubpool_release_(PCR_GL_PUBPOOL pool);
+CRUINT32 _inner_vao_(PCR_GL_PUBPOOL pool);
+CRUINT32 _inner_vbo_(PCR_GL_PUBPOOL pool);
+CRUINT32 _inner_tex_(PCR_GL_PUBPOOL pool);
 
 #endif
