@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-08-07 00:03:45
+ * @LastEditTime: 2024-08-08 23:01:54
  * @FilePath: \CrystalGraphic\src\gl.c
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -102,6 +102,8 @@ static void _inner_load_glapi_(CR_GL* pgl)
     _INNER_LOAD_(DeleteShader);
     _INNER_LOAD_(ShaderSource);
     _INNER_LOAD_(CompileShader);
+    _INNER_LOAD_(GetShaderiv);
+    _INNER_LOAD_(GetShaderInfoLog);
     _INNER_LOAD_(AttachShader);
     _INNER_LOAD_(DetachShader);
     _INNER_LOAD_(CreateProgram);
@@ -151,6 +153,20 @@ static void _inner_setup_pixel_format_(HDC hDc)
     SetPixelFormat(hDc, nPixelFormat, &pfd);
 }
 #endif
+
+static void _inner_check_shader_(CR_GL* pgl, GLuint shader)
+{
+    GLint result = GL_TRUE;
+    pgl->glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+    if (result == GL_FALSE)
+    {
+        char szLog[1024] = {0};
+        GLsizei logLen = 0;
+        pgl->glGetShaderInfoLog(shader, 1024, &logLen, szLog);
+        CR_LOG_WAR("auto", szLog);
+    }
+    else CR_LOG_IFO("auto", "shader compile succeed");
+}
 
 CR_GL* _inner_create_cr_gl_(
     #ifdef CR_WINDOWS
@@ -204,13 +220,33 @@ CR_GL* _inner_create_cr_gl_(
     pgl->glBindTexture(GL_TEXTURE_2D, pgl->publicTexture);
     pgl->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, &(pgl->whiteColor));
     //
+    pgl->VertexSource = &_binary_shader_vertexdefault_glsl_start;
+    pgl->FragmentSource = &_binary_shader_fragmentdefault_glsl_start;
+    pgl->VertexShader = pgl->glCreateShader(GL_VERTEX_SHADER);
+    pgl->FragmentShader = pgl->glCreateShader(GL_FRAGMENT_SHADER);
+    pgl->glShaderSource(pgl->VertexShader, 1, (const GLchar* const*)&(pgl->VertexSource), NULL);
+    pgl->glShaderSource(pgl->FragmentShader, 1, (const GLchar* const*)&(pgl->FragmentSource), NULL);
+    pgl->glCompileShader(pgl->VertexShader);
+    pgl->glCompileShader(pgl->FragmentShader);
+    //检查shader
+    _inner_check_shader_(pgl, pgl->VertexShader);
+    _inner_check_shader_(pgl, pgl->FragmentShader);
+    //
+    pgl->shaderProgram = pgl->glCreateProgram();
+    pgl->glAttachShader(pgl->shaderProgram, pgl->VertexShader);
+    pgl->glAttachShader(pgl->shaderProgram, pgl->FragmentShader);
+    pgl->glLinkProgram(pgl->shaderProgram);
+    //
+    pgl->colorLocation = pgl->glGetUniformLocation(pgl->shaderProgram, "paintColor");
+    pgl->aspLocation = pgl->glGetUniformLocation(pgl->shaderProgram, "asp");
+    pgl->texture0 = pgl->glGetUniformLocation(pgl->shaderProgram, "aTex0");
+    CR_LOG_IFO("auto", "shader inited");
     //
     return pgl;
 }
 
 void _inner_delete_cr_gl_(CR_GL* pgl)
 {
-    _inner_cr_glpubpool_release_(pgl->pubPool);
     #ifdef CR_WINDOWS
     wglMakeCurrent(pgl->hdc, NULL);
     wglDeleteContext(pgl->hrc);
@@ -218,6 +254,12 @@ void _inner_delete_cr_gl_(CR_GL* pgl)
     glXMakeCurrent(pgl->dpy, None, NULL);
     glXDestroyContext(pgl->dpy, pgl->context);
     #endif
+    _inner_cr_glpubpool_release_(pgl->pubPool);
+    pgl->glDetachShader(pgl->shaderProgram, pgl->VertexShader);
+    pgl->glDetachShader(pgl->shaderProgram, pgl->FragmentShader);
+    pgl->glDeleteProgram(pgl->shaderProgram);
+    pgl->glDeleteShader(pgl->VertexShader);
+    pgl->glDeleteShader(pgl->FragmentShader);
     CRAlloc(pgl, 0);
 }
 
@@ -282,6 +324,9 @@ void _inner_cr_gl_paint_(CR_GL* pgl)
     pgl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _inner_draw_titlebar_(pgl);
     _inner_cr_gl_resize_(pgl);
+    pgl->glUseProgram(pgl->shaderProgram);
+    //开画
+    pgl->glUseProgram(0);
     //更新缓冲
     #ifdef CR_WINDOWS
     SwapBuffers(pgl->hdc);

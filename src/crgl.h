@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-07-08 12:33:11
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2024-08-06 22:55:56
+ * @LastEditTime: 2024-08-08 22:43:43
  * @FilePath: \CrystalGraphic\src\crgl.h
  * @Description: 
  * Coptright (c) 2024 by RetliveAdore-lizaterop@gmail.com, All Rights Reserved. 
@@ -65,6 +65,12 @@ typedef struct cr_gl
     CRINT32 texture0;
     CRUINT32 publicTexture;
     CRCOLORU whiteColor;  //1x1纹理，主打一个节省空间
+    //
+    CRUINT8 *VertexSource;
+    CRUINT8 *FragmentSource;
+    //
+    
+    //
     const GLubyte* (*glGetString)(GLenum name);
     void (*glClearColor)(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
     void (*glClear)(GLbitfield mask);
@@ -95,6 +101,8 @@ typedef struct cr_gl
     void (*glDeleteShader)(GLuint shader);
     void (*glShaderSource)(GLuint shader, GLsizei count, const GLchar* const* string, const GLint* length);
     void (*glCompileShader)(GLuint shader);
+    void (*glGetShaderiv)(GLuint shader, GLenum pname, GLint* params);
+    void (*glGetShaderInfoLog)(GLuint shader, GLsizei maxLength, GLsizei* length, GLchar* infoLog);
     void (*glAttachShader)(GLuint program, GLuint shader);
     void (*glDetachShader)(GLuint program, GLuint shader);
     GLuint (*glCreateProgram)(void);
