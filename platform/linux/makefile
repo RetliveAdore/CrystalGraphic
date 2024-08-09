@@ -31,7 +31,7 @@ clean:
 copy:
 
 ./out/objs/shader/%.o : ./shader/%.glsl
-	@ld -r -b binary -z noexecstack $^ -o $@
+	@ld -r -b binary $^ -o $@
 
 ./out/objs/src/%.o : ./src/%.c
 	@gcc -fvisibility=hidden -fPIC -c $^ -o $@ $(INCLUDE_PATHS)
