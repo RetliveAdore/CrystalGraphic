@@ -12,8 +12,10 @@
 
 extern char _binary_shader_vertexdefault_glsl_start;
 extern char _binary_shader_vertexdefault_glsl_end;
+extern int _binary_shader_vertexdefault_glsl_size;
 
 extern char _binary_shader_fragmentdefault_glsl_start;
 extern char _binary_shader_fragmentdefault_glsl_end;
+extern int _binary_shader_fragmentdefault_glsl_size;
 
 #endif

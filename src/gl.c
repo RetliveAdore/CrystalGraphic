@@ -224,8 +224,10 @@ CR_GL* _inner_create_cr_gl_(
     pgl->FragmentSource = &_binary_shader_fragmentdefault_glsl_start;
     pgl->VertexShader = pgl->glCreateShader(GL_VERTEX_SHADER);
     pgl->FragmentShader = pgl->glCreateShader(GL_FRAGMENT_SHADER);
-    pgl->glShaderSource(pgl->VertexShader, 1, (const GLchar* const*)&(pgl->VertexSource), NULL);
-    pgl->glShaderSource(pgl->FragmentShader, 1, (const GLchar* const*)&(pgl->FragmentSource), NULL);
+    int sizev = (int)(CRUINT64)&_binary_shader_vertexdefault_glsl_size;
+    int sizef = (int)(CRUINT64)&_binary_shader_fragmentdefault_glsl_size;
+    pgl->glShaderSource(pgl->VertexShader, 1, (const GLchar* const*)&(pgl->VertexSource), &sizev);
+    pgl->glShaderSource(pgl->FragmentShader, 1, (const GLchar* const*)&(pgl->FragmentSource), &sizef);
     pgl->glCompileShader(pgl->VertexShader);
     pgl->glCompileShader(pgl->FragmentShader);
     //检查shader

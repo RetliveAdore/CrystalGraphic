@@ -81,6 +81,7 @@ CRAPI void CRModUninit(void)
 
 CRAPI CRBOOL CrystalGraphicInit(void** alg, void** thr)
 {
+    CR_LOG_DBG("auto", "init");
     if (!alg || !thr)
     {
         CR_LOG_ERR("auto", "nullptr");
