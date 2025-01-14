@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2025-01-06 11:28:40
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2025-01-14 12:58:09
+ * @LastEditTime: 2025-01-14 21:05:19
  * @FilePath: \CrystalGraphic\test\test1.c
  * @Description: 
  * 
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
         //
         CRUpdateItemProp(2, demo.items, demo.itemProps);
         //
-        CRSetZoom(demo.windowProp.window, 1.0f / (1.2f + 0.5f * cos(0.5 * t)));
+        // CRSetZoom(demo.windowProp.window, 1.0f / (1.2f + 0.5f * cos(0.5 * t)));
     }
 
     //

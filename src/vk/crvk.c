@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2025-01-06 09:20:12
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2025-01-14 12:49:45
+ * @LastEditTime: 2025-01-14 21:05:40
  * @FilePath: \CrystalGraphic\src\vk\crvk.c
  * @Description: 
  * 
@@ -51,6 +51,7 @@ pcrvk _inner_create_crvk_(
     vk->currentFrame = 0;
     vk->titlebarHeight = titlebarHeight;
     vk->flags |= depthEnable ? CRVK_FLAG_1_ENABLEDEPTH : CRVK_FLAG_0_0;
+    vk->globalZoom = 1.0f;
     //
     if (!_inner_init_vk_device_(vk))
     {
