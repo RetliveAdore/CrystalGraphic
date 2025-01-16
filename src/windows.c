@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-12-08 16:57:03
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2025-01-12 17:53:46
+ * @LastEditTime: 2025-01-15 22:16:11
  * @FilePath: \CrystalGraphic\src\windows.c
  * @Description: 
  * 
@@ -21,7 +21,7 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
     CRWINDOWMSG inf = {0};
     inf.window = (CRWINDOW)pInner;
     inf.x = GET_X_LPARAM(lParam);
-    inf.y = GET_Y_LPARAM(lParam) - CRUI_TITLEBAR_PIXEL;
+    inf.y = GET_Y_LPARAM(lParam);
     inf.keycode = wParam & 0xff;
     inf.status = CRUI_STAT_OTHER;
     switch (msg)
@@ -29,7 +29,7 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
         case WM_PAINT:
             break;
         case WM_MOUSEMOVE:
-            if (inf.y > 0)
+            if (inf.y > CRUI_TITLEBAR_PIXEL)
             {
                 inf.status = CRUI_STAT_MOVE;
                 pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
@@ -38,21 +38,19 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
             pInner->cursor.y = inf.y;
             return 0;
         case WM_SETCURSOR:
-            if (pInner->cursor.y < 0 && pInner->cursor.x < CRUI_TITLEBAR_PIXEL)
+            if (pInner->cursor.y < CRUI_TITLEBAR_PIXEL && pInner->cursor.x < CRUI_TITLEBAR_PIXEL)
                 SetCursor(LoadCursor(NULL, IDC_HAND));
             else
                 SetCursor(LoadCursor(NULL, IDC_ARROW));
             return 0;
         case WM_LBUTTONDOWN:
-            if (inf.y < 0)
+            if (inf.y <= CRUI_TITLEBAR_PIXEL)
             {
-                if (inf.x > CRUI_TITLEBAR_PIXEL * 3)
+                if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
                 {
                     SendMessage(hWnd, WM_SYSCOMMAND, SC_MOVE|HTCAPTION, 0);
                     pInner->drag = CRTRUE;
                 }
-                else if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
-                {}
                 else if (inf.x > CRUI_TITLEBAR_PIXEL)
                 {}
                 else
@@ -66,13 +64,11 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
             }
             return 0;
         case WM_LBUTTONUP:
-            if (inf.y < 0)
+            if (inf.y <= CRUI_TITLEBAR_PIXEL)
             {
                 if (inf.x > CRUI_TITLEBAR_PIXEL * 3)
                 {}
                 else if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
-                {}
-                else if (inf.x > CRUI_TITLEBAR_PIXEL)
                 {}
                 else if (pInner->preClose)
                     SendMessage(hWnd, WM_CLOSE, 0, 0);
@@ -84,6 +80,27 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
             }
             pInner->preClose = CRFALSE;
             pInner->drag = CRFALSE;
+            return 0;
+        case WM_MBUTTONDOWN:
+            inf.status = CRUI_STAT_DOWN | CRUI_STAT_MIDD;
+            pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
+            return 0;
+        case WM_MBUTTONUP:
+            inf.status = CRUI_STAT_UP | CRUI_STAT_MIDD;
+            pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
+            return 0;
+        case WM_MOUSEWHEEL:
+            inf.z = GET_WHEEL_DELTA_WPARAM(wParam);
+            inf.status = CRUI_STAT_SCROLL | CRUI_STAT_MIDD;
+            pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
+            return 0;
+        case WM_SETFOCUS:
+            inf.status = CRUI_STAT_UP;
+            pInner->funcs[CRWINDOW_FOCUS_CB](&inf);
+            return 0;
+        case WM_KILLFOCUS:
+            inf.status = CRUI_STAT_DOWN;
+            pInner->funcs[CRWINDOW_FOCUS_CB](&inf);
             return 0;
         case WM_KEYDOWN:
             inf.status = CRUI_STAT_DOWN;

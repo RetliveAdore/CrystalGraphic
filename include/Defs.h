@@ -2,7 +2,7 @@
  * @Author: RetliveAdore lizaterop@gmail.com
  * @Date: 2024-12-12 23:21:33
  * @LastEditors: RetliveAdore lizaterop@gmail.com
- * @LastEditTime: 2025-01-14 12:50:06
+ * @LastEditTime: 2025-01-15 22:22:58
  * @FilePath: \CrystalGraphic\include\Defs.h
  * @Description: 
  * 
@@ -53,6 +53,7 @@ typedef struct crwindow_msg
     {
         CRINT64 x;
         CRUINT64 w;
+        CRINT64 z;
     };
     union
     {
@@ -64,13 +65,14 @@ typedef struct crwindow_msg
     CRUINT8 status;
     CRLVOID lp;
 }CRWINDOWMSG, *PCRWINDOWMSG;
-#define CRUI_STAT_OTHER 0x00
-#define CRUI_STAT_UP    0x01
-#define CRUI_STAT_DOWN  0x02
-#define CRUI_STAT_MOVE  0x04
-#define CRUI_STAT_LEFT  0x10
-#define CRUI_STAT_NIDD  0x20
-#define CRUI_STAT_RIGHT 0x30
+#define CRUI_STAT_OTHER  0x00
+#define CRUI_STAT_UP     0x01
+#define CRUI_STAT_DOWN   0x02
+#define CRUI_STAT_MOVE   0x04
+#define CRUI_STAT_SCROLL 0x08
+#define CRUI_STAT_LEFT   0x10
+#define CRUI_STAT_MIDD   0x20
+#define CRUI_STAT_RIGHT  0x40
 
 #define CRWINDOW_QUIT_CB   0
 #define CRWINDOW_PAINT_CB  1
