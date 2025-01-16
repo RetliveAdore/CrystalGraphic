@@ -12,7 +12,7 @@
 
 #ifdef CR_LINUX
 #include <X11/cursorfont.h>
-#include <GL/glx.h>
+// #include <GL/glx.h>
 
 static Display *pDisplay = NULL;
 static Window rootWindow = 0;
@@ -196,32 +196,20 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
 {
     PCRWINDOWINNER pInner = data;
 
-	GLint att[] = {
-		None
-	};
-	Colormap cmap;
-	XSetWindowAttributes swa;
-	GLXContext glc;
-	XWindowAttributes gwa;
-
-    XVisualInfo *vi = glXChooseVisual(pDisplay, 0, att);
-    cmap = XCreateColormap(pDisplay, rootWindow, vi->visual, AllocNone);
-    swa.colormap = cmap;
     //选择关心的事件
-    swa.event_mask = ExposureMask
+    long eventMask = ExposureMask
 	| KeyPressMask | ButtonPressMask
 	| KeyReleaseMask | ButtonReleaseMask
 	| PointerMotionMask
 	| StructureNotifyMask;
 
-    pInner->win = XCreateWindow(
+    pInner->win = XCreateSimpleWindow(
         pDisplay, rootWindow,
         pInner->prop->x, pInner->prop->y,
         pInner->prop->w, pInner->prop->h,
-        0, vi->depth, InputOutput,
-        vi->visual, CWColormap | CWEventMask,
-        &swa
+        0, 0, 0
     );
+    XSelectInput(pDisplay, pInner->win, eventMask);
     XStoreName(pDisplay, pInner->win, pInner->prop->title);
     //制作无边框窗口
     MWMHints mwmhints;
@@ -235,7 +223,6 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
         PropModeReplace, (unsigned char*)&mwmhints,
         PROP_MWM_HINTS_ELEMENTS
     );
-    
 
     XMapWindow(pDisplay, pInner->win);
     pInner->protocols_quit = XInternAtom(pDisplay, "WM_DELETE_WINDOW", True);
