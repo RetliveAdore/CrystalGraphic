@@ -8,7 +8,7 @@ LIBRARY_PATHS := ./depends/CrystalCoreRelease/Linux
 LIBRARIES := CrystalCore
 LIBRARIES += X11
 LIBRARIES += vulkan
-LIBRARIES += GL
+# LIBRARIES += GL
 
 INCLUDE_PATHS := $(foreach item,$(INCLUDE_PATHS),-I$(item))
 INNER_INCLUDE_PATHS := $(foreach item,$(INNER_INCLUDE_PATHS),-I$(item))
