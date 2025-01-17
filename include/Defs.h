@@ -184,7 +184,71 @@ typedef CRCODE(*CRWindowCallback)(PCRWINDOWMSG msg);
 
 #define CR_VK_ESC   0x1b
 
+#define CR_VK_A 'A'
+#define CR_VK_B
+#define CR_VK_C
+#define CR_VK_D 'D'
+#define CR_VK_E
+#define CR_VK_F
+#define CR_VK_G
+#define CR_VK_H
+#define CR_VK_I
+#define CR_VK_J
+#define CR_VK_K
+#define CR_VK_L
+#define CR_VK_M
+#define CR_VK_N
+#define CR_VK_O
+#define CR_VK_P
+#define CR_VK_Q
+#define CR_VK_R
+#define CR_VK_S 'S'
+#define CR_VK_T
+#define CR_VK_U
+#define CR_VK_V
+#define CR_VK_W 'W'
+#define CR_VK_X
+#define CR_VK_Y
+#define CR_VK_Z
+
 #elif defined CR_LINUX
+
+#define CR_VK_SPACE 0x41
+
+#define CR_VK_LEFT  0x71
+#define CR_VK_UP    0x6f
+#define CR_VK_RIGHT 0x72
+#define CR_VK_DOWN  0x74
+
+#define CR_VK_ESC   0x09
+
+#define CR_VK_A 0x26
+#define CR_VK_B 0x38
+#define CR_VK_C 0x36
+#define CR_VK_D 0x28
+#define CR_VK_E 0x1a
+#define CR_VK_F 0x29
+#define CR_VK_G
+#define CR_VK_H
+#define CR_VK_I
+#define CR_VK_J
+#define CR_VK_K
+#define CR_VK_L
+#define CR_VK_M
+#define CR_VK_N
+#define CR_VK_O
+#define CR_VK_P
+#define CR_VK_Q
+#define CR_VK_R
+#define CR_VK_S 0x27
+#define CR_VK_T
+#define CR_VK_U
+#define CR_VK_V
+#define CR_VK_W 0x19
+#define CR_VK_X
+#define CR_VK_Y
+#define CR_VK_Z 0x34
+
 #endif
 
 #endif

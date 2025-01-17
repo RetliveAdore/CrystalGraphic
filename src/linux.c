@@ -66,24 +66,37 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
             break;
         case ButtonPress:
             inf.x = event.xbutton.x;
-            inf.y = event.xbutton.y - CRUI_TITLEBAR_PIXEL;
-            if (inf.y > 0)
+            inf.y = event.xbutton.y;
+            if (inf.y > CRUI_TITLEBAR_PIXEL)
             {
+                inf.keycode = event.xbutton.button;
                 inf.status = CRUI_STAT_DOWN;
-                if (event.xbutton.button == 1) inf.status |= CRUI_STAT_LEFT;
-                else if (event.xbutton.button == 2) inf.status |= CRUI_STAT_RIGHT;
+                if (event.xbutton.button == 1)
+                    inf.status |= CRUI_STAT_LEFT;
+                else if (event.xbutton.button == 2)
+                    inf.status |= CRUI_STAT_MIDD;
+                else if (event.xbutton.button == 3)
+                    inf.status |= CRUI_STAT_RIGHT;
+                else if (event.xbutton.button == 4)
+                {
+                    inf.z = 30;
+                    inf.status = CRUI_STAT_MIDD | CRUI_STAT_SCROLL;
+                }
+                else if (event.xbutton.button == 5)
+                {
+                    inf.z = -30;
+                    inf.status = CRUI_STAT_MIDD | CRUI_STAT_SCROLL;
+                }
                 pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
             }
             else if (event.xbutton.button == 1)
 			{
-				if (inf.x > CRUI_TITLEBAR_PIXEL * 3)
+				if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
 				{
 					pInner->delta.x = event.xbutton.x;
 					pInner->delta.y = event.xbutton.y;
 					pInner->drag = CRTRUE;
 				}
-				else if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
-				{}
 				else if (inf.x > CRUI_TITLEBAR_PIXEL)
 				{}
 				else
@@ -92,23 +105,22 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
             break;
         case ButtonRelease:
             inf.x = event.xbutton.x;
-            inf.y = event.xbutton.y - CRUI_TITLEBAR_PIXEL;
-            if (inf.y > 0)
+            inf.y = event.xbutton.y;
+            if (inf.y > CRUI_TITLEBAR_PIXEL)
             {
+                inf.keycode = event.xbutton.button;
                 inf.status = CRUI_STAT_UP;
-                if (event.xbutton.button == 1) inf.status |= CRUI_STAT_LEFT;
-                else if (event.xbutton.button == 2) inf.status |= CRUI_STAT_RIGHT;
+                if (event.xbutton.button == 1)
+                    inf.status |= CRUI_STAT_LEFT;
+                else if (event.xbutton.button == 2)
+                    inf.status |= CRUI_STAT_MIDD;
+                else if (event.xbutton.button == 3)
+                    inf.status |= CRUI_STAT_RIGHT;
                 pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
             }
             else if (event.xbutton.button == 1)
 			{
-				if (inf.x > CRUI_TITLEBAR_PIXEL * 3)
-				{
-					pInner->delta.x = event.xbutton.x;
-					pInner->delta.y = event.xbutton.y;
-					pInner->drag = CRTRUE;
-				}
-				else if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
+				if (inf.x > CRUI_TITLEBAR_PIXEL * 2)
 				{}
 				else if (inf.x > CRUI_TITLEBAR_PIXEL)
 				{}
@@ -133,6 +145,14 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
 			inf.keycode = event.xkey.keycode;
 			pInner->funcs[CRWINDOW_KEY_CB](&inf);
 			break;
+        case FocusIn:
+            inf.status = CRUI_STAT_UP;
+            pInner->funcs[CRWINDOW_FOCUS_CB](&inf);
+            break;
+        case FocusOut:
+            inf.status = CRUI_STAT_DOWN;
+            pInner->funcs[CRWINDOW_FOCUS_CB](&inf);
+            break;
         case ClientMessage:
             if(event.xclient.data.l[0] == pInner->protocols_quit)
             {
@@ -143,9 +163,7 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
                     XFlush(pDisplay);
                     XDestroyWindow(pDisplay, pInner->win);
                 }
-            #ifdef CR_BUILD_DEBUG
                 CR_LOG_DBG("auto", "Close window");
-            #endif
             }
             break;
         default:
@@ -200,7 +218,7 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
     long eventMask = ExposureMask
 	| KeyPressMask | ButtonPressMask
 	| KeyReleaseMask | ButtonReleaseMask
-	| PointerMotionMask
+	| PointerMotionMask | FocusChangeMask
 	| StructureNotifyMask;
 
     pInner->win = XCreateSimpleWindow(
@@ -235,9 +253,7 @@ static void _inner_window_thread_(CRLVOID data, CRTHREAD idThis)
         pInner->onProcess = CRFALSE;
         return;
     }
-#ifdef CR_BUILD_DEBUG
     CR_LOG_DBG("auto", "Create window succeed");
-#endif
     /**/
     pInner->paintThread = CRThread(_inner_paint_thread_, pInner);
     _inner_process_msg_(pInner);

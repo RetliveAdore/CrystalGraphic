@@ -46,26 +46,26 @@ CRCODE keyCallback(PCRWINDOWMSG msg)
 {
     if (msg->status & CRUI_STAT_DOWN)
     {
-        if (msg->keycode == 'W')
+        if (msg->keycode == CR_VK_W)
             status.pu = CRTRUE;
-        else if (msg->keycode == 'A')
+        else if (msg->keycode == CR_VK_A)
             status.pl = CRTRUE;
-        else if (msg->keycode == 'S')
+        else if (msg->keycode == CR_VK_S)
             status.pd = CRTRUE;
-        else if (msg->keycode == 'D')
+        else if (msg->keycode == CR_VK_D)
             status.pr = CRTRUE;
         else if (msg->keycode == CR_VK_ESC)
             CRCloseWindow(game.windowProperty.window);
     }
     else if (msg->status & CRUI_STAT_UP)
     {
-        if (msg->keycode == 'W')
+        if (msg->keycode == CR_VK_W)
             status.pu = CRFALSE;
-        else if (msg->keycode == 'A')
+        else if (msg->keycode == CR_VK_A)
             status.pl = CRFALSE;
-        else if (msg->keycode == 'S')
+        else if (msg->keycode == CR_VK_S)
             status.pd = CRFALSE;
-        else if (msg->keycode == 'D')
+        else if (msg->keycode == CR_VK_D)
             status.pr = CRFALSE;
     }
 }
