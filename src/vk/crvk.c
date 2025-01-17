@@ -51,7 +51,14 @@ pcrvk _inner_create_crvk_(
     vk->currentFrame = 0;
     vk->titlebarHeight = titlebarHeight;
     vk->flags |= depthEnable ? CRVK_FLAG_1_ENABLEDEPTH : CRVK_FLAG_0_0;
-    vk->globalZoom = 1.0f;
+    vk->globalProp.angle = 0.0f;
+    vk->globalProp.zoom = 1.0f;
+    vk->globalProp.x = 0.0f;
+    vk->globalProp.y = 0.0f;
+    vk->globalProp.color.r = 0.0f;
+    vk->globalProp.color.g = 0.0f;
+    vk->globalProp.color.b = 0.0f;
+    vk->globalProp.color.a = 0.0f;
     //
     if (!_inner_init_vk_device_(vk))
     {
@@ -338,12 +345,13 @@ void _inner_update_global_descriptor_(pcrvk vk)
         ratioX = (float)(vk->w) / (float)(vk->h);
     CR_GLOBAL_UBO gUbo;
     //
-    _inner_setup_mat_4_(&gUbo.view);
+    _inner_set_rotate_z_(&gUbo.view, vk->globalProp.angle);
+    crMat4MoveXY(&gUbo.view, vk->globalProp.x, vk->globalProp.y);
+    crMat4Zoom(&gUbo.view, vk->globalProp.zoom);
     //
     gUbo.ratio[0] = ratioX;
     gUbo.ratio[1] = ratioY;
     gUbo.ratio[2] = 1.0f;
-    gUbo.ratio[3] = vk->globalZoom;
     gUbo.colorFlag[0] = CR_GET_FLAG_1_STAT(vk->flags, CRVK_FLAG_1_SRGB) ? 0.0f : 1.0f;
     //
     void *mapData;
@@ -361,9 +369,9 @@ void _inner_update_global_descriptor_(pcrvk vk)
     }
 }
 
-void _inner_set_vk_zoom_(pcrvk vk, float zoom)
+void _inner_set_vk_global_prop_(pcrvk vk, CRGLOBALPROP *pProp)
 {
-    vk->globalZoom = zoom;
+    memcpy(&vk->globalProp, pProp, sizeof(CRGLOBALPROP));
     vk->flags |= CRVK_FLAG_1_FLUSH;
 }
 

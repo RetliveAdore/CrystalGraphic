@@ -79,12 +79,12 @@ static void _inner_process_msg_(PCRWINDOWINNER pInner)
                     inf.status |= CRUI_STAT_RIGHT;
                 else if (event.xbutton.button == 4)
                 {
-                    inf.z = 30;
+                    inf.z = 1;
                     inf.status = CRUI_STAT_MIDD | CRUI_STAT_SCROLL;
                 }
                 else if (event.xbutton.button == 5)
                 {
-                    inf.z = -30;
+                    inf.z = -1;
                     inf.status = CRUI_STAT_MIDD | CRUI_STAT_SCROLL;
                 }
                 pInner->funcs[CRWINDOW_MOUSE_CB](&inf);

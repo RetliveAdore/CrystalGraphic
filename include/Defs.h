@@ -121,7 +121,7 @@ typedef struct cr_item_properties{
 }CRITEMPROP;
 
 typedef struct cr_global_properties{
-    float anglr;
+    float angle;
     float x, y;
     float zoom;
     CRCOLOR_RGBA color;
@@ -185,31 +185,31 @@ typedef CRCODE(*CRWindowCallback)(PCRWINDOWMSG msg);
 #define CR_VK_ESC   0x1b
 
 #define CR_VK_A 'A'
-#define CR_VK_B
-#define CR_VK_C
+#define CR_VK_B 'B'
+#define CR_VK_C 'C'
 #define CR_VK_D 'D'
-#define CR_VK_E
-#define CR_VK_F
-#define CR_VK_G
-#define CR_VK_H
-#define CR_VK_I
-#define CR_VK_J
-#define CR_VK_K
-#define CR_VK_L
-#define CR_VK_M
-#define CR_VK_N
-#define CR_VK_O
-#define CR_VK_P
-#define CR_VK_Q
-#define CR_VK_R
+#define CR_VK_E 'E'
+#define CR_VK_F 'F'
+#define CR_VK_G 'G'
+#define CR_VK_H 'H'
+#define CR_VK_I 'I'
+#define CR_VK_J 'J'
+#define CR_VK_K 'K'
+#define CR_VK_L 'L'
+#define CR_VK_M 'M'
+#define CR_VK_N 'N'
+#define CR_VK_O 'O'
+#define CR_VK_P 'P'
+#define CR_VK_Q 'Q'
+#define CR_VK_R 'R'
 #define CR_VK_S 'S'
-#define CR_VK_T
-#define CR_VK_U
-#define CR_VK_V
+#define CR_VK_T 'T'
+#define CR_VK_U 'U'
+#define CR_VK_V 'V'
 #define CR_VK_W 'W'
-#define CR_VK_X
-#define CR_VK_Y
-#define CR_VK_Z
+#define CR_VK_X 'X'
+#define CR_VK_Y 'Y'
+#define CR_VK_Z 'Z'
 
 #elif defined CR_LINUX
 
@@ -228,25 +228,25 @@ typedef CRCODE(*CRWindowCallback)(PCRWINDOWMSG msg);
 #define CR_VK_D 0x28
 #define CR_VK_E 0x1a
 #define CR_VK_F 0x29
-#define CR_VK_G
-#define CR_VK_H
-#define CR_VK_I
-#define CR_VK_J
-#define CR_VK_K
-#define CR_VK_L
-#define CR_VK_M
-#define CR_VK_N
-#define CR_VK_O
-#define CR_VK_P
-#define CR_VK_Q
-#define CR_VK_R
+#define CR_VK_G 0x2a
+#define CR_VK_H 0x2b
+#define CR_VK_I 0x1f
+#define CR_VK_J 0x2c
+#define CR_VK_K 0x2d
+#define CR_VK_L 0x2e
+#define CR_VK_M 0x3a
+#define CR_VK_N 0x39
+#define CR_VK_O 0x20
+#define CR_VK_P 0x21
+#define CR_VK_Q 0x18
+#define CR_VK_R 0x1b
 #define CR_VK_S 0x27
-#define CR_VK_T
-#define CR_VK_U
-#define CR_VK_V
+#define CR_VK_T 0x1c
+#define CR_VK_U 0x1e
+#define CR_VK_V 0x37
 #define CR_VK_W 0x19
-#define CR_VK_X
-#define CR_VK_Y
+#define CR_VK_X 0x35
+#define CR_VK_Y 0x1d
 #define CR_VK_Z 0x34
 
 #endif

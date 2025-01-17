@@ -25,11 +25,11 @@ out gl_PerVertex {
 
 void main()
 {
-    vec4 transfer = ubo.model * vec4(inPosition, 1.0);
-    gl_Position = vec4( 
-         transfer.x * g_ubo.ratio.x * g_ubo.ratio.w,
-        transfer.y * g_ubo.ratio.y * g_ubo.ratio.w,
-        transfer.z * g_ubo.ratio.z * g_ubo.ratio.w,
+    vec4 transfer = g_ubo.view * ubo.model * vec4(inPosition, 1.0);
+    gl_Position = vec4(
+         transfer.x * g_ubo.ratio.x,
+        transfer.y * g_ubo.ratio.y,
+        transfer.z * g_ubo.ratio.z,
         transfer.w
     );
     fragColor = inColor * ubo.color;

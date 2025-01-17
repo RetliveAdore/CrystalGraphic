@@ -29,10 +29,10 @@ CRAPI void CRSetWindowCbk(CRWINDOW window, CRUINT8 type, CRWindowCallback cbk)
         pInner->funcs[type] = _inner_empty_callback_;
 }
 
-CRAPI void CRSetZoom(CRWINDOW window, float zoom)
+CRAPI void CRSetGlobalProp(CRWINDOW window, CRGLOBALPROP *pProp)
 {
     if (!window) return;
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)window;
     if (!pInner->vk) return;
-    _inner_set_vk_zoom_(pInner->vk, zoom);
+    _inner_set_vk_global_prop_(pInner->vk, pProp);
 }

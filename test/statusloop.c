@@ -37,7 +37,7 @@ static void _inner_setup_speed_()
         if (!status.pr)
         {
             if (status.vX == 0.0f)
-                status.vX = -SPEED_F;
+                status.vX = SPEED_F;
         }
         else
             status.vX = 0.0f;
@@ -45,7 +45,7 @@ static void _inner_setup_speed_()
     else if (status.pr)
     {
         if (status.vX == 0.0f)
-            status.vX = SPEED_F;
+            status.vX = -SPEED_F;
     }
     else status.vX = 0.0f;
     if (status.pu)
@@ -53,7 +53,7 @@ static void _inner_setup_speed_()
         if (!status.pd)
         {
             if (status.vY == 0.0f)
-                status.vY = -SPEED_F;
+                status.vY = SPEED_F;
         }
         else
             status.vY = 0.0f;
@@ -61,7 +61,7 @@ static void _inner_setup_speed_()
     else if (status.pd)
     {
         if (status.vY == 0.0f)
-            status.vY = SPEED_F;
+            status.vY = -SPEED_F;
     }
     else status.vY = 0.0f;
 }
@@ -81,10 +81,10 @@ void mainloop()
     float halfdy = (status.vY - status.oldvY) / 2;
     status.posX += dt * (status.vX + halfdx);
     status.posY += dt * (status.vY + halfdy);
-    //更新渲染状态
-    game.rectProp.x = status.posX;
-    game.rectProp.y = status.posY;
-    game.rectProp.angle = status.angle;
-    game.rectProp.zoom = status.zoom;
-    CRUpdateItemProp(1, &game.rectItem, &game.rectProp);
+    //更新摄像机状态
+    game.camera.x = status.posX;
+    game.camera.y = status.posY;
+    game.camera.zoom = status.zoom;
+    game.camera.angle = status.angle;
+    CRSetGlobalProp(game.windowProperty.window, &game.camera);
 }

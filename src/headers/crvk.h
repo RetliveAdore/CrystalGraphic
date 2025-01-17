@@ -166,9 +166,7 @@ typedef struct {
     VkImageView colorImageView;
     
     //
-    float globalZoom;
-    float globalDx, globalDy;
-    float globalAngle;
+    CRGLOBALPROP globalProp;
     //
     CRRBTREE blendGroupTree;
 }crvk, *pcrvk;
@@ -274,7 +272,7 @@ void _inner_update_uniform_buffer_(pcrvk vk, CRUINT32 imageIndex);
 
 //
 
-void _inner_set_vk_zoom_(pcrvk vk, float zoom);
+void _inner_set_vk_global_prop_(pcrvk vk, CRGLOBALPROP *pProp);
 void _inner_set_titlebar_(pcrvk vk, CRBOOL draw);
 
 #endif

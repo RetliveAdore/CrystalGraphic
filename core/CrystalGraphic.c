@@ -28,7 +28,7 @@ static void* CRGraphicFunListArr[] =
     _cr_inner_do_nothing_, "CRRemoveMesh",       //22
     //
     _cr_inner_do_nothing_, "CRGetScreenSize",    //24
-    _cr_inner_do_nothing_, "CRSetZoom",          //26
+    _cr_inner_do_nothing_, "CRSetGlobalProp",    //26
     //
     _cr_inner_do_nothing_, "CRAddBlendGroup",    //28
     _cr_inner_do_nothing_, "CRRemoveBlendGroup", //30

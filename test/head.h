@@ -32,6 +32,7 @@ typedef struct gameStruct {
     CRITEMPROP rectProp;
     CRGRAPHICITEM rectItem;
     //
+    CRGLOBALPROP camera;
 }GAMESTRUCT;
 extern GAMESTRUCT game;
 

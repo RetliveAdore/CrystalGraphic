@@ -90,7 +90,9 @@ static LRESULT AfterProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, PCRW
             pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
             return 0;
         case WM_MOUSEWHEEL:
-            inf.z = GET_WHEEL_DELTA_WPARAM(wParam);
+            if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) inf.z = 1;
+            else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) inf.z = -1;
+            else inf.z = 0;
             inf.status = CRUI_STAT_SCROLL | CRUI_STAT_MIDD;
             pInner->funcs[CRWINDOW_MOUSE_CB](&inf);
             return 0;

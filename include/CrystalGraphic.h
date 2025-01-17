@@ -133,12 +133,12 @@ typedef void(*CRGETSCREENSIZE)(CRUINT32 *w, CRUINT32 *h);
 #define CRGetScreenSize ((CRGETSCREENSIZE)CRGraphicFunList[24])
 
 /**
- * 设置全局缩放率
+ * 设置全局视角属性
  * 参数1：指定窗口
- * 参数2：缩放倍率
+ * 参数2：指向属性的指针
  */
-typedef void(*CRSETZOOM)(CRWINDOW window, float zoom);
-#define CRSetZoom ((CRSETZOOM)CRGraphicFunList[26])
+typedef void(*CRSETGLOBALPROP)(CRWINDOW window, CRGLOBALPROP *pProp);
+#define CRSetGlobalProp ((CRSETGLOBALPROP)CRGraphicFunList[26])
 
 /**
  * 添加渲染组

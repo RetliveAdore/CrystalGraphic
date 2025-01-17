@@ -27,7 +27,7 @@ CRCODE mouseCallback(PCRWINDOWMSG msg)
     }
     else if ((msg->status & CRUI_STAT_MIDD) && (msg->status & CRUI_STAT_SCROLL))
     {
-        status.zoom += 0.001f * (float)msg->z;
+        status.zoom += 0.05f * (float)msg->z;
         if (status.zoom < 0.05f) status.zoom = 0.05f;
         else if (status.zoom > 1.5f) status.zoom = 1.5f;
     }
