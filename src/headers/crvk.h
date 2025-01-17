@@ -167,6 +167,8 @@ typedef struct {
     
     //
     float globalZoom;
+    float globalDx, globalDy;
+    float globalAngle;
     //
     CRRBTREE blendGroupTree;
 }crvk, *pcrvk;

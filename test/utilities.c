@@ -30,60 +30,6 @@ const CRUINT32 rectIndex[] = {
     0, 2, 3
 };
 
-static void _inner_pixel_to_float_(CRINT64 x, CRINT64 y, float *pX, float *pY)
-{
-    *pX = ((float)(x * 2) / (float)game.windowProperty.w - 1.0f) * game.ratio;
-    *pY = (float)(y * 2) / (float)game.windowProperty.h - 1.0f;
-}
-
-static void _delta_pixel_to_float_(CRINT64 dx, CRINT64 dy, float *pDx, float *pDy)
-{
-    *pDx = (float)(dx * 2) / (float)game.windowProperty.w * game.ratio;
-    *pDy = (float)(dy * 2) / (float)game.windowProperty.h;
-}
-
-static CRCODE mouseCallback(PCRWINDOWMSG msg)
-{
-    static CRINT64 oldX, oldY;
-    if (msg->status & CRUI_STAT_MOVE)
-    {
-        if (status.pressed)
-        {
-            float dx, dy;
-            _delta_pixel_to_float_(msg->x - oldX, msg->y - oldY, &dx, &dy);
-            status.posX = status.oldX + dx;
-            status.posY = status.oldY + dy;
-        }
-    }
-    else if (msg->status & CRUI_STAT_DOWN)
-    {
-        oldX = msg->x;
-        oldY = msg->y;
-        status.oldX = status.posX;
-        status.oldY = status.posY;
-        status.pressed = CRTRUE;
-    }
-    else if (msg->status & CRUI_STAT_UP)
-    {
-        status.pressed = CRFALSE;
-    }
-    else if ((msg->status & CRUI_STAT_MIDD) && (msg->status & CRUI_STAT_SCROLL))
-    {
-        status.zoom += 0.001f * (float)msg->z;
-        if (status.zoom < 0.05f) status.zoom = 0.05f;
-        else if (status.zoom > 1.5f) status.zoom = 1.5f;
-    }
-    return 0;
-}
-
-static CRCODE focusCallback(PCRWINDOWMSG msg)
-{
-    if (msg->status & CRUI_STAT_DOWN)
-    {
-        status.pressed = CRFALSE;
-    }
-}
-
 CRBOOL initWindow()
 {
     CRGetScreenSize(&game.screenW, &game.screenH);
@@ -100,6 +46,7 @@ CRBOOL initWindow()
     //设置回调
     CRSetWindowCbk(game.windowProperty.window, CRWINDOW_MOUSE_CB, mouseCallback);
     CRSetWindowCbk(game.windowProperty.window, CRWINDOW_FOCUS_CB, focusCallback);
+    CRSetWindowCbk(game.windowProperty.window, CRWINDOW_KEY_CB, keyCallback);
     return CRTRUE;
 }
 
@@ -160,12 +107,14 @@ CRBOOL initResources(char *argv_0)
 
 STATUSSTRUCT status;
 
-void mainloop()
+void _inner_pixel_to_float_(CRINT64 x, CRINT64 y, float *pX, float *pY)
 {
-    //
-    game.rectProp.x = status.posX;
-    game.rectProp.y = status.posY;
-    game.rectProp.angle = status.angle;
-    game.rectProp.zoom = status.zoom;
-    CRUpdateItemProp(1, &game.rectItem, &game.rectProp);
+    *pX = ((float)(x * 2) / (float)game.windowProperty.w - 1.0f) * game.ratio;
+    *pY = (float)(y * 2) / (float)game.windowProperty.h - 1.0f;
+}
+
+void _delta_pixel_to_float_(CRINT64 dx, CRINT64 dy, float *pDx, float *pDy)
+{
+    *pDx = (float)(dx * 2) / (float)game.windowProperty.w * game.ratio;
+    *pDy = (float)(dy * 2) / (float)game.windowProperty.h;
 }

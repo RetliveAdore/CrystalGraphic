@@ -15,6 +15,11 @@
 
 //最大内存为10MB
 #define MAX_MEM (1024 * 1024 * 10)
+#define MAP_W 12
+#define MAP_H 12
+#define SPEED_F 1.0f
+#define SPEED_F_MAX 10.0f
+#define SPEED_UP_RATIO 2.0f
 
 typedef struct gameStruct {
     CRMODULE core;
@@ -31,7 +36,11 @@ typedef struct gameStruct {
 extern GAMESTRUCT game;
 
 typedef struct statusStruct {
+    CRTIMER timer;
     CRBOOL pressed;
+    CRBOOL pl, pr, pu, pd;
+    float oldvX, oldvY;
+    float vX, vY;
     float posX, oldX;
     float posY, oldY;
     float zoom;
@@ -42,6 +51,16 @@ extern STATUSSTRUCT status;
 CRBOOL initWindow();
 CRBOOL initResources(char *argv_0);
 
+//功能性函数定义
+void _inner_pixel_to_float_(CRINT64 x, CRINT64 y, float *pX, float *pY);
+void _delta_pixel_to_float_(CRINT64 dx, CRINT64 dy, float *pDx, float *pDy);
+
+//回调函数定义
+CRCODE mouseCallback(PCRWINDOWMSG msg);
+CRCODE focusCallback(PCRWINDOWMSG msg);
+CRCODE keyCallback(PCRWINDOWMSG msg);
+
+//状态循环函数定义
 void mainloop();
 
 #endif

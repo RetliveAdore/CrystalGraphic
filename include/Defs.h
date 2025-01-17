@@ -120,6 +120,13 @@ typedef struct cr_item_properties{
     CRGRAPHICTEXTURE texture;
 }CRITEMPROP;
 
+typedef struct cr_global_properties{
+    float anglr;
+    float x, y;
+    float zoom;
+    CRCOLOR_RGBA color;
+}CRGLOBALPROP;
+
 typedef struct cr_blend_group{
     CRUINT64 level;
     CRUINT64 count;
@@ -164,5 +171,20 @@ typedef struct cr_global_ubo {
  * 由事件触发的回调函数
  */
 typedef CRCODE(*CRWindowCallback)(PCRWINDOWMSG msg);
+
+//键码定义
+#ifdef CR_WINDOWS
+
+#define CR_VK_SPACE 0x20
+
+#define CR_VK_LEFT  0x25
+#define CR_VK_UP    0x26
+#define CR_VK_RIGHT 0x27
+#define CR_VK_DOWN  0x28
+
+#define CR_VK_ESC   0x1b
+
+#elif defined CR_LINUX
+#endif
 
 #endif

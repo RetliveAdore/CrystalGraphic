@@ -60,6 +60,7 @@ int main(int argc, char **argv)
     }
     //
 FailedtoInitResources:
+    CRTimerMark(&status.timer);
     while(CRWindowCounter())
     {
         mainloop();

@@ -279,7 +279,7 @@ CRAPI void CRCloseWindow(CRWINDOW window)
         return;
     }
     PCRWINDOWINNER pInner = (PCRWINDOWINNER)window;
-    CloseWindow(pInner->hWnd);
+    SendMessage(pInner->hWnd, WM_CLOSE, 0, 0);
 }
 
 CRAPI void CRGetScreenSize(CRUINT32 *w, CRUINT32 *h)
